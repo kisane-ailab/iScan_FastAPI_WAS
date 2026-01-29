@@ -1,0 +1,12 @@
+opencv-python
+tqdm
+pandas
+timm
+scipy
+terminaltables
+pycocotools
+pyzmq
+opt_einsum
+huggingface_hub
+psutil
+timm

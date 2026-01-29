@@ -1,0 +1,211 @@
+# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
+
+# Train/val/test sets as 1) dir: path/to/imgs, 2) file: path/to/imgs.txt, or 3) list: [path/to/imgs1, path/to/imgs2, ..]
+path: ..datasets/kisan # dataset root dir
+train: train_cil_10.txt # train images (relative to 'path') 118287 images
+val: test_cil_200.txt # val images (relative to 'path') 5000 images
+test: test_cil_200.txt # 20288 of 40670 images, submit to https://competitions.codalab.org/competitions/20794
+
+
+# Classes
+names:
+  0: Barley Bread
+  1: Chocolate Macaron
+  2: Strawberry Macaron
+  3: Powdered Sugar Bagel
+  4: Onion Bagel
+  5: Gyeongju Hwangnam Bread
+  6: Black Sesame Chal Bread
+  7: Butter Pancake
+  8: Cherry Pastry
+  9: Sugar Powdered Mini Loaf
+  10: Black Sesame Mini Loaf
+  11: Sugar Powdered Chal Bread
+  12: Soboru Bread
+  13: Plain Baguette
+  14: Orange Pastry
+  15: Vanilla New York Roll
+  16: Waffle
+  17: Strawberry New York Roll
+  18: Chocolate New York Roll
+  19: Green Tea New York Roll
+  20: Cheddar Cheese New York Roll
+  21: Pretzel Financier
+  22: Plain Financier
+  23: Six Clove Garlic Bread
+  24: Croffle
+  25: Chocolate Financier
+  26: Salt Bread
+  27: Yakgwa Financier
+  28: Red Bean Butter Salt Bread
+  29: Whole Sesame Baguette
+  30: Classic Twist Twisted Donuts
+  31: Sugar Twist Twisted Donuts
+  32: Mini Baguette
+  33: Herb Baguette
+  34: Rye Baguette
+  35: Sesame Bread
+  36: Twisted Donuts
+  37: Chiffon Bread
+  38: Mustard Sausage Bread
+  39: Triangle Pastry
+  40: Melon Bread
+  41: Brioche
+  42: Egg Bacon Bread
+  43: Sugar Melon Bread
+  44: Kiwi Pancake
+  45: Blueberry Pancake
+  46: Almond Muffin
+  47: Cranberry Muffin
+  48: Croissant
+  49: Sugar Chiffon Bread
+  50: Banana Pancake
+  51: Custard Pastry
+  52: Raspberry Macaron
+  53: Raisin Rye Bread
+  54: Orange Macaron
+  55: Rye Bread
+  56: Orange Pancake
+  57: Sugar Flower Bread
+  58: Vanilla Macaron
+  59: Cranberry Rye Bread
+  60: Powdered Rye Bread
+  61: Chocolate Shell Bread
+  62: Black Sesame Muffin
+  63: Original Nuts Muffin
+  64: Chocolate Muffin
+  65: Shell Bread
+  66: Swirl Muffin
+  67: Original Custard Cream
+  68: Soboru Mont Blanc
+  69: Chocolate Loaf
+  70: Cranberry Baguette
+  71: Chocolate Custard Cream
+  72: Original Mont Blanc
+  73: Sugar Powdered Custard Cream
+  74: Half Rye Bread
+  75: Sugar Powdered Cream Bread
+  76: Sliced Rye Bread
+  77: Castella Cake
+  78: Honey Bread
+  79: Fresh Cream Omelette
+  80: Burger Bread
+  81: Garlic Baguette
+  82: Crunchy Balloon Bread
+  83: Muffin Set
+  84: Heart Cookie
+  85: Peanut Butter Loaf
+  86: Pretzel
+  87: Blueberry Tart
+  88: Green Tea Castella
+  89: Chocolate Castella
+  90: Vanilla Castella
+  91: Cheesecake
+  92: Raspberry Tart
+  93: Chiffon Cake
+  94: Jambon Beurre Salt Bread
+  95: Brioche Tresse
+  96: Whole Loaf
+  97: Sliced Campagne
+  98: Quartered Campagne
+  99: Sliced Whole Rye Bread
+  100: Cheddar Cheese Mont Blanc
+  101: Mocha Batard Bread
+  102: Crusty Batard Bread
+  103: Fresh Fruit Pastry
+  104: Cheese Muffin
+  105: Egg Tart
+  106: Mango Tart
+  107: Raspberry Tart
+  108: Blueberry Tart
+  109: Original Donut
+  110: Powdered Sugar Donut
+  111: Orange Donut
+  112: Strawberry Donut
+  113: Chocolate Donut
+  114: Baumkuchen
+  115: Waffle Piece
+  116: Waffle Cookie
+  117: Chocolate Chip Cookie
+  118: Chocolate Drizzled Butter Ring
+  119: Raspberry Cheesecake
+  120: Blueberry Chocolate Cake
+  121: Square Loaf
+  122: Milk Loaf
+  123: Baguette
+  124: Striped Baguette
+  125: Good Balance Milk Large
+  126: Organic Milk Large
+  127: Seoul Milk
+  128: Seoul Milk Strawberry
+  129: Seoul Milk Chocolate
+  130: Seoul Milk Coffee
+  131: Almond Breeze
+  132: Almond Breeze Protein
+  133: Cocopalm Peach
+  134: Icis Water
+  135: Monster Ultra
+  136: Monster Punch
+  137: Trevi
+  138: Narangd Pineapple Zero
+  139: Narangd Green Apple Zero
+  140: Perrier Lime
+  141: Perrier Lemon
+  142: Bundaberg Grapefruit
+  143: Sunnup Red Fruit Blend Juice
+  144: Sunnup Citrus Green Blend Juice
+  145: Sunnup Purple Berry Blend Juice
+  146: Pororo Tropical Juice
+  147: Pororo Apple Juice
+  148: Pororo Mixed Berry Juice
+  149: Good Balance Milk Small
+  150: Organic Milk Small
+  151: Jus Yellow Juice
+  152: Jus Red Juice
+  153: Cold Brew Signature
+  154: Barista Rules Vanilla Bean
+  155: Barista Rules Cold Brew
+  156: Tayo Organic Grape Juice Pet
+  157: Tayo Organic Apple Juice Pet
+  158: Pororo Kids Apple Juice Pet
+  159: Pororo Kids Strawberry Juice Pet
+  160: Pororo Kids Banana Juice Pet
+  161: Pororo Strawberry Drink Pack
+  162: Turning Mecard Kids Drink Pack
+  163: Secret Jouju Kids Drink Pack
+  164: Lepicier Strawberry Jam
+  165: Lepicier Blueberry Jam
+  166: Peanut Butter Jam
+  167: Hallabong Orange Jam
+  168: Good Balance Yogurt Strawberry
+  169: Good Balance Yogurt Plain
+  170: Vanilla Ice Candy
+  171: Strawberry Ice Candy
+  172: Red Bean Ice Candy
+  173: Green Tea Ice Candy
+  174: Melon Ice Candy
+  175: Coffee Ice Candy
+  176: Blue Ice Candy
+  177: Chocolate Ice Candy
+  178: Nachu Peach Mango Juice
+  179: Nachu Pineapple Orange Juice
+  180: Soyu Plain Soymilk
+  181: Soyu Black Bean Soymilk
+  182: Soyu Black Bean Sesame Soymilk
+  183: Daily Juice Grapefruit
+  184: Daily Juice Orange
+  185: Daily Juice Grape
+  186: Organic Apple Juice
+  187: Organic Tomato Juice
+  188: Organic Orange Juice
+  189: Organic Grape Juice
+  190: Blueberry Macaron
+  191: Raspberry Pastry
+  192: Chocolate Brioche
+  193: Strawberry Pancake
+  194: Chocolate Mont Blanc
+  195: Monster Citra
+  196: Bundaberg Mango
+  197: Cold Brew Decaffeine
+  198: Pororo Kids Milk Juice Pet
+  199: Pororo Grape Drink Pack

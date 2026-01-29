@@ -1,0 +1,77 @@
+{
+	"integration_setting": {
+		"company_name":"cheonsang_seongsu",	// food_discovery, KICC, ...
+		"use_launcher": false,
+		"iScanIpAddr": "192.168.20.10",
+		"iScanOutputImage": "Cam_2_Color_debug.jpg",
+		"iScanOutputText": "artis_result_debug.json"
+	},
+	"iScanInstance" : {
+		"SaveData" : false,
+		"portNum" : "50000"
+	},
+	"customized_vendor_setting" : {
+		"vendor_name": "cheonsang_seongsu",
+		"chat_id": "-1002560705126"
+	},
+	"edge_manager_setting": {
+		"hidden_console": false,
+		"autoStartCam": false,
+		"auto_update_program": true,
+		"auto_upload_debug_data" : true,
+		"save_debug_data" : false,
+		"db_key_name" : "cheonsang_seongsu",		// 공백X, 대소문자 구분, 한글 입력 금지
+		"flip_cam": false,
+		"rotate_cam": 0,
+		"zmq_port_ai_inference": 15000, // (0 = Diasble)
+		"wup_threshold_cnt": 100, // 기본값 10   -> 100
+		"wup_threshold_det": 1, // 기본값 1    -> 10
+		"wup_threshold_cls": 3, // 기본값 0.05 -> 3
+		"wup_threshold_dep": 1, // depth warm up
+		"depth_min": 200, // 1070 mm 기준
+		"depth_max": 500, // 1070 mm 기준
+		"crop" : {
+			"left_x" : 180,
+			"left_y" : 0,
+			"right_x" : 130,
+			"right_y" : 0
+		},
+		"depth_use_flag": false, // Depth 생성 사용 유무
+		"depth_detection_use_flag": false, // Depth 검출 사용 유무
+		"depth_algo": 4, // Depth 알고리즘: BM=0, cudaBM+WLF, cudaBM+DGIST, cudaBM+No, cudaSGM+WLS, cudaSGM+DGIST, cudaSGM+No, SGBM 
+		"depth_debug_flag": false, // Depth Debug 영상 저장 유무
+		"depth_width": 1280, // 생성할 Depth의 크기
+		"depth_height": 720,
+		"depth_num_disp": 0, // 0일때 비활성화 (64, 128, 256..)
+		"gamma_correction": false,
+		"auto_adjust_skip_sec" : 5,
+		"pixel_threshold_det" : 1800,
+		"area_threshold_det" : 200
+	},
+	"kisan_config.json": {
+		"ai_send_result_format": 1,
+		"ai_tensorrt_rgb": 0,
+		"ai_tensorrt_depth": 1,
+		"ai_valid_area":{
+			"left_x":0,
+			"left_y":50,
+			"right_x":1180,
+			"right_y":910
+		},
+		"depth_check": {
+			"max_depth_check":{
+				"use": true
+			},
+			"stand_item_check":{
+				"use": false
+			},
+			"overlap_item_check": {
+				"use": false,
+				"iou_threshold": 0.3,
+				"depth_threshold":30
+			}
+		},
+		"ai_thresh_mode_rgb": 1,
+		"ai_thresh_sub_value": 0.2
+	}
+}

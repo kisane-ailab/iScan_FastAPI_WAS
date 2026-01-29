@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품 관리 - iScan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .loading {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-size: 18px;
+            color: #666;
+            gap: 20px;
+        }
+        
+        /* 공통 스피너 스타일 */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 테이블 내부 로딩 스타일 (공통) */
+        .loading-inline {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            font-size: 18px;
+            color: #666;
+            gap: 15px;
+        }
+        
+        .error {
+            padding: 20px;
+            background-color: #fee;
+            color: #c33;
+            border-radius: 8px;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="loading">
+            <div class="spinner"></div>
+            <div>UI 구성을 불러오는 중...</div>
+        </div>
+    </div>
+    
+    <!-- 모듈 로드 순서: utils -> search-keyboard -> product-service -> sdui-loader -> common -->
+    <!-- search-keyboard.js는 캐시가 강하게 남을 수 있으므로 버전 파라미터로 캐시 무효화 -->
+    <script src="/static/utils.js"></script>
+    <script src="/static/search-keyboard.js?v=20251217"></script>
+    <script src="/static/product-service.js"></script>
+    <script src="/static/sdui-loader.js"></script>
+    <script src="/static/common.js"></script>
+    <script>
+        // 모듈 로드 확인
+        console.log('[product.html] 모듈 로드 확인:', {
+            Utils: typeof Utils !== 'undefined',
+            SearchKeyboard: typeof window.SearchKeyboard !== 'undefined',
+            ProductService: typeof ProductService !== 'undefined',
+            SDUILoader: typeof SDUILoader !== 'undefined',
+            SDUICommon: typeof SDUICommon !== 'undefined'
+        });
+        
+        // 공통 초기화 스크립트 사용
+        let initAttempts = 0;
+        const maxInitAttempts = 50; // 최대 5초 대기
+        
+        function initApp() {
+            initAttempts++;
+            
+            if (typeof SDUICommon !== 'undefined' && typeof SDUICommon.startApp === 'function') {
+                SDUICommon.startApp('product');
+            } else if (typeof SDUILoader !== 'undefined' && typeof SDUILoader.startApp === 'function') {
+                SDUILoader.startApp('product');
+            } else if (initAttempts < maxInitAttempts) {
+                // SDUICommon이 아직 로드되지 않았으면 재시도
+                setTimeout(initApp, 100);
+            } else {
+                console.error('[product.html] SDUICommon을 로드할 수 없습니다. 최대 시도 횟수 초과');
+                const app = document.getElementById('app');
+                if (app) {
+                    app.innerHTML = '<div class="error"><h2>오류</h2><p>SDUICommon을 로드할 수 없습니다.</p></div>';
+                }
+            }
+        }
+        
+        // DOM이 준비되면 초기화
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            setTimeout(initApp, 100);
+        }
+        
+        // 상품 데이터 로드를 위한 추가 스크립트
+        // 두 가지 방법으로 데이터 로드 시도:
+        // 1. 커스텀 이벤트 리스너
+        // 2. 직접 테이블 찾기
+        
+        function loadProductDataWhenReady() {
+            console.log('[product.html] loadProductDataWhenReady 호출');
+            const table = document.querySelector('#product-table');
+            
+            if (table) {
+                console.log('[product.html] 테이블 찾음! loadProductData 호출 (이벤트 방법)');
+                
+                // ProductService 우선 사용, 없으면 SDUICommon 사용 (하위 호환)
+                let loadFn = null;
+                if (typeof ProductService !== 'undefined' && typeof ProductService.loadProductData === 'function') {
+                    loadFn = ProductService.loadProductData;
+                    console.log('[product.html] ProductService.loadProductData 사용');
+                } else if (typeof SDUICommon !== 'undefined' && typeof SDUICommon.loadProductData === 'function') {
+                    loadFn = SDUICommon.loadProductData;
+                    console.log('[product.html] SDUICommon.loadProductData 사용 (하위 호환)');
+                }
+                
+                if (loadFn) {
+                    try {
+                        console.log('[product.html] loadProductData 호출 시도 (이벤트 방법)...');
+                        const result = loadFn();
+                        console.log('[product.html] loadProductData 호출 완료 (이벤트 방법), 반환값:', result);
+                        
+                        // Promise인 경우 처리
+                        if (result && typeof result.then === 'function') {
+                            result.then(() => {
+                                console.log('[product.html] loadProductData Promise 완료 (이벤트 방법)');
+                            }).catch((error) => {
+                                console.error('[product.html] loadProductData Promise 실패 (이벤트 방법):', error);
+                            });
+                        }
+                    } catch (error) {
+                        console.error('[product.html] loadProductData 호출 중 에러 (이벤트 방법):', error);
+                        console.error('[product.html] 에러 스택:', error.stack);
+                    }
+                } else {
+                    console.error('[product.html] loadProductData 함수를 찾을 수 없습니다');
+                }
+                return true;
+            }
+            return false;
+        }
+        
+        // 방법 1: 커스텀 이벤트 리스너 (렌더링 완료 시)
+        document.addEventListener('sdui-render-complete', function(event) {
+            console.log('[product.html] sdui-render-complete 이벤트 수신:', event.detail);
+            if (event.detail && event.detail.page === 'product') {
+                setTimeout(() => {
+                    if (!loadProductDataWhenReady()) {
+                        console.warn('[product.html] 이벤트 수신 후에도 테이블을 찾을 수 없음, 재시도...');
+                        // 재시도
+                        let attempts = 0;
+                        const maxRetryAttempts = 20;
+                        const retry = setInterval(() => {
+                            attempts++;
+                            if (loadProductDataWhenReady() || attempts >= maxRetryAttempts) {
+                                clearInterval(retry);
+                                if (attempts >= maxRetryAttempts) {
+                                    console.error('[product.html] 이벤트 방법으로 테이블을 찾을 수 없습니다. 최대 시도 횟수 초과');
+                                }
+                            }
+                        }, 200);
+                    }
+                }, 500);
+            }
+        });
+        
+        // 방법 2: 직접 테이블 찾기 (백업)
+        function waitForTableAndLoad() {
+            const maxAttempts = 100; // 최대 10초 대기
+            let attempts = 0;
+            
+            const checkAndLoad = () => {
+                attempts++;
+                const table = document.querySelector('#product-table');
+                console.log('[product.html] 테이블 확인 시도', attempts, '/', maxAttempts, ':', table ? '찾음' : '없음');
+                
+                if (table) {
+                    console.log('[product.html] 테이블 찾음! loadProductData 호출 (백업 방법)');
+                    
+                    // ProductService 우선 사용
+                    let loadFunction = null;
+                    if (typeof ProductService !== 'undefined' && typeof ProductService.loadProductData === 'function') {
+                        loadFunction = ProductService.loadProductData;
+                        console.log('[product.html] ProductService.loadProductData 사용 (백업)');
+                    } else if (typeof SDUICommon !== 'undefined' && typeof SDUICommon.loadProductData === 'function') {
+                        loadFunction = SDUICommon.loadProductData;
+                        console.log('[product.html] SDUICommon.loadProductData 사용 (백업, 하위 호환)');
+                    } else if (typeof window.loadProductData === 'function') {
+                        loadFunction = window.loadProductData;
+                        console.log('[product.html] window.loadProductData 사용 (백업)');
+                    }
+                    
+                    if (loadFunction) {
+                        try {
+                            console.log('[product.html] loadProductData 호출 시도 (백업)...');
+                            const result = loadFunction();
+                            console.log('[product.html] loadProductData 호출 완료 (백업), 반환값:', result);
+                            
+                            // Promise인 경우 처리
+                            if (result && typeof result.then === 'function') {
+                                result.then(() => {
+                                    console.log('[product.html] loadProductData Promise 완료 (백업)');
+                                }).catch((error) => {
+                                    console.error('[product.html] loadProductData Promise 실패 (백업):', error);
+                                });
+                            }
+                        } catch (error) {
+                            console.error('[product.html] loadProductData 호출 중 에러 (백업):', error);
+                            console.error('[product.html] 에러 스택:', error.stack);
+                        }
+                    } else {
+                        console.error('[product.html] loadProductData 함수를 찾을 수 없습니다 (백업)');
+                    }
+                } else if (attempts < maxAttempts) {
+                    setTimeout(checkAndLoad, 100);
+                } else {
+                    console.error('[product.html] 테이블을 찾을 수 없습니다. 최대 시도 횟수 초과');
+                }
+            };
+            
+            // 약간의 지연 후 시작 (렌더링 시간 확보)
+            setTimeout(checkAndLoad, 1000);
+        }
+        
+        // 페이지 로드 후 백업 방법 실행
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', waitForTableAndLoad);
+        } else {
+            waitForTableAndLoad();
+        }
+    </script>
+</body>
+</html>
+

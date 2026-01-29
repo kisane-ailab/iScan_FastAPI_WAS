@@ -1,0 +1,48 @@
+{
+  "telegram_bots": {
+    "bot1": {
+      "token": "7958293374:AAGtkb5f7HdcX1dmSSVWtXbVBs3NsTFiykg",	// iScan_FastAPI_WAS_bot
+      "chat_ids": [
+        //"-4815570969", // yjhong_test|yjhong_test
+        //"-4660246950",	// iScan추론서버
+        "-1002560705126"  // cheonsang_seongsu|cheonsang_seongsu 
+      ],
+      "vendorName": "cheonsang_seongsu"
+    }
+  },
+  "server": {
+    "host": "0.0.0.0",
+    "port": 50000,
+    "debug": false,
+    "chat_id": "-1003325238746",  // 모니터링용 텔레그램 그룹방 chat_id
+    "interval_min": 60  // 텔레그램 메세지 전송 간격 (분)
+  },
+  "client": {
+    "edgeman_port": 18081  // EdgeMan 서버 포트 (브라우저 종료 및 ServMan 실행 요청용)
+  },
+  "system": {
+    "base_409_wait_ms": 3000,
+    "max_consecutive_409": 5
+  },
+  "security": {
+    "allowed_ips": [
+      "127.0.0.1",    // IPv4 localhost
+      "::1",          // IPv6 localhost
+      "182.208.91.210",   // 기산 본관 공인 IP
+      "192.168.5.0/24",   // 기산 본관 내부 IP 범위 (192.168.5.0 ~ 192.168.5.255)
+      "58.238.37.52"      // 기산 별관 공인 IP
+    ],
+    "enable_ip_whitelist": true
+  },
+  "database": {
+    "host": "localhost",
+    "port": 3306,
+    "user": "iscan",
+    "password": "KiSaN)@@@)$&*()",
+    "database": "iscan_test",
+    "charset": "utf8mb4",
+    "pool_size": 10
+  }
+}
+
+

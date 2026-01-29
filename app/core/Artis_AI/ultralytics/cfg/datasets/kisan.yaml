@@ -1,0 +1,105 @@
+path: ..datasets/kisan
+train: train_2.txt
+val: val_2.txt
+test: test.txt
+
+names:
+  0: Barley Bread
+  1: Chocolate Macaron
+  2: Strawberry Macaron
+  3: Powdered Sugar Bagel
+  4: Onion Bagel
+  5: Blueberry Macaron
+  6: Gyeongju Hwangnam Bread
+  7: Black Sesame Chal Bread
+  8: Butter Pancake
+  9: Cherry Pastry
+  10: Powdered Sugar Mini Loaf
+  11: Black Sesame Mini Loaf
+  12: Powdered Chal Bread
+  13: Soboru Bread
+  14: Plain Baguette
+  15: Orange Pastry
+  16: Vanilla New York Roll
+  17: Waffle
+  18: Strawberry New York Roll
+  19: Chocolate New York Roll
+  20: Green Tea New York Roll
+  21: Cheddar New York Roll
+  22: Raspberry Pastry
+  23: Pretzel Financier
+  24: Plain Financier
+  25: Six Clove Garlic Bread
+  26: Croffle
+  27: Chocolate Financier
+  28: Salt Bread
+  29: Yakgwa Financier
+  30: Red Bean Butter Salt Bread
+  31: Whole Sesame Baguette
+  32: Classic Twist Twisted Donuts
+  33: Sugar Twist Twisted Donuts
+  34: Mini Baguette
+  35: Herb Baguette
+  36: Rye Baguette
+  37: Sesame Bread
+  38: Twisted Donuts
+  39: Chiffon Bread
+  40: Mustard Sausage Bread
+  41: Chocolate Brioche
+  42: Triangle Pastry
+  43: Melonpan
+  44: Brioche
+  45: Egg Bacon Bread
+  46: Sugar Melonpan
+  47: Kiwi Pancake
+  48: Strawberry Pancake
+  49: Blueberry Pancake
+  50: Almond Muffin
+  51: Cranberry Muffin
+  52: Croissant
+  53: Sugar Chiffon Bread
+  54: Banana Pancake
+  55: Custard Pastry
+  56: Raspberry Macaron
+  57: Raisin Rye Bread
+  58: Orange Macaron
+  59: Rye Bread
+  60: Orange Pancake
+  61: Sugar Flower Bread
+  62: Vanilla Macaron
+  63: Cranberry Rye Bread
+  64: Powdered Rye Bread
+  65: Chocolate Shell Bread
+  66: Black Sesame Muffin
+  67: Original Nuts Muffin
+  68: Chocolate Muffin
+  69: Shell Bread
+  70: Swirl Muffin
+  71: Original Custard Cream
+  72: Soboru Mont Blanc
+  73: Chocolate Loaf
+  74: Cranberry Baguette
+  75: Chocolate Custard Cream
+  76: Original Mont Blanc
+  77: Chocolate Mont Blanc
+  78: Powdered Custard Cream
+  79: Rye Bread
+  80: Powdered Cream Bread
+  81: Sliced Rye Bread
+  82: Castella Cake
+  83: Honey Bread
+  84: Fresh Cream Omelette
+  85: Burger Bread
+  86: Garlic Baguette
+  87: Crispy Hollow Bread
+  88: Muffin Set
+  89: Heart Cookie
+  90: Peanut Butter Loaf
+  91: Pretzel
+  92: Blueberry Tart
+  93: Green Tea Castella
+  94: Chocolate Castella
+  95: Vanilla Castella
+  96: Cheesecake
+  97: Raspberry Tart
+  98: Chiffon Cake

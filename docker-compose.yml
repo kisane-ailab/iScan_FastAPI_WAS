@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  iscan-api:
+    build: .
+    ports:
+      - "19901:19901"
+    environment:
+      # config.json 파일을 사용하거나 환경변수로 오버라이드 가능
+      - HOST=0.0.0.0
+      - PORT=19901
+      - DEBUG=False
+    volumes:
+      - ./logs:/app/logs
+      - ./config.json:/app/config.json:ro  # config.json 파일을 읽기 전용으로 마운트
+    restart: unless-stopped
+    privileged: true  # 시스템 제어를 위해 필요 
