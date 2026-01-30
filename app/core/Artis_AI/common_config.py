@@ -14,7 +14,7 @@ artis_ai_version = str(artis_ai_version_major) + "." + str(artis_ai_version_mino
 
 artis_ai_db_version_major = 0
 artis_ai_db_version_minor = 0
-artis_ai_db_version_inner = 2
+artis_ai_db_version_inner = 3
 artis_ai_db_version = str(artis_ai_db_version_major) + "." + str(artis_ai_db_version_minor) + "." + str(artis_ai_db_version_inner)
 
 artis_ai_model_version = "0.0.0"

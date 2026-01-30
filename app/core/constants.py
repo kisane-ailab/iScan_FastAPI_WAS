@@ -1,7 +1,7 @@
 # 공통 상수 정의
 
 # 버전 정보
-VERSION = "1.1.10"
+VERSION = "1.1.11"
 TITLE = "iScan Instance (FastAPI WAS)"
 
 # EdgeMan HTTP 서버 기본 포트

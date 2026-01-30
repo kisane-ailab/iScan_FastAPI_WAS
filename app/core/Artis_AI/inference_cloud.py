@@ -36,6 +36,7 @@ class Inference:
         print(f"{cc.CurrentDateTime(0)} [Artis_AI] {cc.artis_ai_json_config}\n")
 
         print(f"{cc.CurrentDateTime(0)} [Artis_AI] Version Information : {cc.artis_ai_version}\n")
+        print(f"{cc.CurrentDateTime(0)} [Artis_AI] DB Version Information : {cc.artis_ai_db_version}")
         print(f"{cc.CurrentDateTime(0)} [Artis_AI] Model Version Information : {cc.artis_ai_model_version}")
         print(f"{cc.CurrentDateTime(0)} [Artis_AI] Model Integrity Check : {cc.artis_ai_model_integrity}\n")
         if cc.artis_ai_model_integrity == "fail":

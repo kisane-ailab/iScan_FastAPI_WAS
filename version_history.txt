@@ -13,6 +13,14 @@ Version History - iScan Fast API WAS
  ⭐ 버전 변경 시 ./core/constants.py 파일의 VERSION 상수 수정할 것
  ⭐ DB 버전 변경 시 ./core/Artis_AI/common_config.py 파일의 VERSION 상수 수정할 것
 
+V1.1.11 (2026-01-29)
+	1) Seg OD/OC 후처리 추가 : spike 감지 및 제거, loop 감지 및 제거
+	2) artis_result_debug.json에 contour 필드 추가
+	    "artis_error_info": {
+	        "object_contour" : {...}
+	    },
+	    "artis_object_contour": {...}
+
 V1.1.10 (2026-01-23)
 	1) Seg OD/OC 모델 Channel 수가 다를 경우에 대한 예외 처리
 	   "kisan_config.json": {

@@ -56,10 +56,10 @@ from seg.msp import *
 from seg.utils.augmentations import FastBaseTransform
 from seg.utils import timer
 from seg.layers.output_utils import postprocess
+from ultralytics import YOLO
 from collections import defaultdict
 from matplotlib import font_manager
-#from seg.data.config import SEG_MEANS_1CH, SEG_STDS_1CH, SEG_MEANS_3CH, SEG_STDS_3CH, SEG_MEANS_4CH, SEG_STDS_4CH
-from ultralytics import YOLO
+from ultralytics.aug import wrapper_detect_spike, has_internal_loop, wrapping_hull_contour
 
 class PreloadedImagesOnGPU:
     def __init__(self, ai_seg_model=None):
@@ -1385,7 +1385,6 @@ class Kisane:
         return len(bbox_output) <= 0, bbox_output, del_cnt
 
     def inference_seg_yolo(self, run_mode, is_det1, img_dict):
-        bbox_output = []
         del_cnt = 0
 
         cc.artis_ai_json_config = cc.get_config(self.config_file_path, cc.artis_ai_json_config)
@@ -1426,6 +1425,7 @@ class Kisane:
             img_npy = img_dict["OD"]
 
         img_h, img_w = img_npy.shape[:2]
+        inf_output = []
         with torch.no_grad():
             results = sg_model.predict(img_npy, conf=0.4, verbose=False)
             for result in results:
@@ -1443,7 +1443,7 @@ class Kisane:
                     score = box.conf[0].cpu().numpy()
                     if cx < self.l_thr or self.r_thr < cx or cy < self.t_thr or self.b_thr < cy:
                         print(f"{CurrentDateTime(0)} [Artis_AI] SG 영역제외 : {cls_id} 클래스 {score} in {(x1, y1)}, {(x2, y2)}")
-                        bbox_output.append([x1, y1, x2, y2, cls_id, score, None, mask])
+                        inf_output.append([x1, y1, x2, y2, cls_id, score, None, mask])
                         continue
                     
                     score_pass = True
@@ -1455,13 +1455,13 @@ class Kisane:
                             print(f"{CurrentDateTime(0)} [Artis_AI] {del_cnt}번째 {cls_id} 클래스 : "
                                         f"임계값 미만 False {score} >= {score_thr}")
 
-                    bbox_output.append([x1, y1, x2, y2, cls_id, score, score_pass, mask])
+                    inf_output.append([x1, y1, x2, y2, cls_id, score, score_pass, mask])
 
-        tmp_bbox_output = self.remove_overlap(bbox_output)
+        tmp_bbox_output = self.remove_overlap(inf_output)
         if run_mode == "NewItem" and not is_det1:
             tmp_bbox_output = self.merge_detected_area(tmp_bbox_output, add_mask=True, img_h=img_h, img_w=img_w)
 
-        bbox_output = []
+        spike_output = []
         for idx, bbox in enumerate(tmp_bbox_output):
             mask = bbox[-1]
             contour = np.int32([mask])
@@ -1471,9 +1471,30 @@ class Kisane:
             x1, y1, w, h = cv2.boundingRect(contour)
             x2, y2 = min(x1 + w, img_w), min(y1 + h, img_h)
 
-            contour_list = contour[0].reshape(-1, 1, 2)
-            contour_list = contour_list.tolist()
-            #contour_list = contour.tolist()
+            cls_id = int(bbox[4])
+
+            cvt_cnt = contour[0].reshape(-1, 1, 2).tolist()
+
+            if cls_id not in [9999990, 9999991]:
+                is_spike, info, unspike_cnt = wrapper_detect_spike(cvt_cnt)
+                if is_spike:
+                    print(f"{CurrentDateTime(0)} [Artis_AI] {idx}번째 {bbox[4]} 클래스 : spike 제거")
+                    cvt_cnt = unspike_cnt
+
+            spike_output.append([x1, y1, x2, y2, bbox[4], bbox[5], bbox[6], cvt_cnt])
+
+        bbox_output = []
+        for idx, out in enumerate(spike_output):
+            contour = out[7]
+            x1, y1, x2, y2 = out[0], out[1], out[2], out[3]
+
+            if int(out[4]) in [9999990, 9999991]:
+                has_loop = has_internal_loop(contour)
+                if has_loop:
+                    raw_hull, x1, y1, x2, y2, used = wrapping_hull_contour(spike_output, seed_idx=idx, img_w=img_w, img_h=img_h)
+                    spike_output[idx][7] = raw_hull
+                    contour = raw_hull
+                    print(f"{CurrentDateTime(0)} [Artis_AI] {idx}번째 {out[4]} 클래스 loop 제거 : candidate [{used}]")
 
             if self.ai_combine_mode == cc.artis_ai_model_mode["mode_seg_with_feature_matching"]:
                 # 원본 이미지에서 ROI 부분만 crop
@@ -1481,21 +1502,24 @@ class Kisane:
                     img_rgb = img_npy[:, :, :3].astype(np.uint8)
                 else:
                     img_rgb = img_npy.astype(np.uint8)
-                #crop = img_npy[y1:y2, x1:x2]
+                # crop = img_npy[y1:y2, x1:x2]
                 crop = img_rgb[y1:y2, x1:x2]
 
                 # ROI 크기만큼 마스크 생성
                 mask_small = np.zeros(crop.shape[:2], dtype=np.uint8)
 
                 # contour 좌표를 ROI 기준으로 shift
-                contour_shifted = contour[0] - [x1, y1]
+                #contour_shifted = contour[0] - [x1, y1]
+                contour_arr = np.asarray(contour)
+                contour_arr = contour_arr.reshape(1, -1, 2)[0]
+                contour_shifted = contour_arr - [x1, y1]
 
                 cv2.fillPoly(mask_small, [contour_shifted], 255)
-                #cv2.imwrite(f"1.fillPoly_{len(bbox_output)}.png", mask_small)
+                # cv2.imwrite(f"1.fillPoly_{len(bbox_output)}.png", mask_small)
 
                 # 이미지 ROI에 bitwise_and 적용
                 mask_img = cv2.bitwise_and(crop, crop, mask=mask_small)
-                #cv2.imwrite(f"2.mask_img_{len(bbox_output)}.png", mask_img)
+                # cv2.imwrite(f"2.mask_img_{len(bbox_output)}.png", mask_img)
 
                 '''if len(contour[0]) < 5:
                     angle = 0
@@ -1505,9 +1529,9 @@ class Kisane:
                 patch = mask_img
                 ##cv2.imwrite(f"3.patch_{len(bbox_output)}.png", patch)
 
-                bbox_output.append([x1, y1, x2, y2, bbox[4], bbox[5], bbox[6], contour_list, patch])
+                bbox_output.append([x1, y1, x2, y2, out[4], out[5], out[6], contour, patch])
             else:
-                bbox_output.append([x1, y1, x2, y2, bbox[4], bbox[5], bbox[6], contour_list])
+                bbox_output.append([x1, y1, x2, y2, out[4], out[5], out[6], contour])
 
         return len(bbox_output) <= 0, bbox_output, del_cnt
 
@@ -2223,6 +2247,11 @@ class Kisane:
                                                   int(each_invalid_bbox[2]), int(each_invalid_bbox[3])]}
                 cc.artis_ai_result_json['artis_error_info']['object_bbox'].update(current_json_data)
 
+                if self.ai_combine_mode == cc.artis_ai_model_mode["mode_seg_with_seg"]:
+                    current_json_data = {
+                        str(index): {'cnt': len(each_invalid_bbox[7]), 'point': each_invalid_bbox[7]}}
+                    cc.artis_ai_result_json['artis_error_info']['object_contour'].update(current_json_data)
+
             # 전체 결과 저장  if str(each_bbox_output[4]) not in self.sg_special_class:
             real_idx = 0
             flag_class_valid = True
@@ -2244,6 +2273,11 @@ class Kisane:
 
                     current_json_data = {str(real_idx): str(each_bbox_output[5])}
                     cc.artis_ai_result_json['artis_object_score'].update(current_json_data)
+
+                    if self.ai_combine_mode == cc.artis_ai_model_mode["mode_seg_with_seg"]:
+                        current_json_data = {
+                            str(real_idx): {'cnt': len(each_bbox_output[7]), 'point': each_bbox_output[7]}}
+                        cc.artis_ai_result_json['artis_object_contour'].update(current_json_data)
 
                     real_idx += 1
 
@@ -2271,6 +2305,11 @@ class Kisane:
 
                     current_json_data = {str(integrate_index): str(each_invalid_det_0_bbox[5])}
                     cc.artis_ai_result_json['artis_object_score'].update(current_json_data)
+
+                    if self.ai_combine_mode == cc.artis_ai_model_mode["mode_seg_with_seg"]:
+                        current_json_data = {
+                            str(integrate_index): {'cnt': len(each_invalid_det_0_bbox[7]), 'point': each_invalid_det_0_bbox[7]}}
+                        cc.artis_ai_result_json['artis_object_contour'].update(current_json_data)
                 ### Save Invalid BBox To Json ###
 
             # Det0 : Depth / Seg 결과

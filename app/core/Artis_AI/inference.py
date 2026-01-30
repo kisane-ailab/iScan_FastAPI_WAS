@@ -197,7 +197,7 @@ def check_string(recv_str):
 def make_default_result_json(result_json):
     result_json['artis_error_info'] = {'version': {}, 'error_code': '0x00000000', 'error_reason': 'OK',
                                        'error_code_detail':[], 'error_reason_detail':[],
-                                       'object_total_cnt': 0, 'object_bbox': {}}
+                                       'object_total_cnt': 0, 'object_bbox': {},  'object_contour': {}}
     json_artis_ai_version = {
         "Artis_AI": str(cc.artis_ai_version), 
         "Artis_AI_Model": str(cc.artis_ai_model_version),
@@ -214,6 +214,7 @@ def make_default_result_json(result_json):
 
     result_json['artis_result_info'] = {'object_total_cnt': 0}
     result_json['artis_object_bbox'] = {}
+    result_json['artis_object_contour'] = {}
     result_json['artis_object_detail'] = {}
     result_json['artis_object_score'] = {}
 

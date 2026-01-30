@@ -654,6 +654,7 @@ async def receive_images(
             artis_result, zipfile, zipname, artis_time = artis_model.inference(processed_files, RECEIVE_DIR, run_mode, timestamp)
             #print(f"inference 성공: artis_result={type(artis_result)}, zipfile={zipfile}, zipname={zipname}, artis_time={type(artis_time)}")
         except Exception as e:
+            #shutil.copytree(RECEIVE_DIR, RECEIVE_DIR + "_ERR", dirs_exist_ok=True)
             print(f"inference 에러: {e}")
             print(f"에러 타입: {type(e)}")
             print(f"에러 스택: {traceback.format_exc()}")
